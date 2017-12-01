@@ -1,0 +1,45 @@
+@import controllers.Application.MenuData
+@import controllers.Application.CarouselData
+@(fooForm: Form[String], menuData: MenuData, carouselData: CarouselData, validationForm: Form[(String, String, Int, String)])(implicit request: MessagesRequestHeader)
+
+@import parts.cards
+
+@main("SAS Dynamics", menuData, false) {
+    <div class="row">
+        <div class="owl-carousel owl-theme">
+            @for(carouselItem <- carouselData) {
+                <div class="item"><h4></h4><img src="@routes.Assets.at("images/owl-carousel/" + carouselItem.fileName)" alt=""></div>
+            }
+            @*<div class="item"><h4></h4><img src="@routes.Assets.at("images/owl-carousel/car1.jpg")" alt=""></div>
+            <div class="item"><h4></h4><img src="@routes.Assets.at("images/owl-carousel/car2.jpg")" alt=""></div>
+            <div class="item"><h4></h4><img src="@routes.Assets.at("images/owl-carousel/car3.jpg")" alt=""></div>
+            <div class="item"><h4></h4><img src="@routes.Assets.at("images/owl-carousel/car4.jpg")" alt=""></div>
+            <div class="item"><h4></h4><img src="@routes.Assets.at("images/owl-carousel/car5.jpg")" alt=""></div>
+            <div class="item"><h4></h4><img src="@routes.Assets.at("images/owl-carousel/car6.jpg")" alt=""></div>
+            <div class="item"><h4></h4><img src="@routes.Assets.at("images/owl-carousel/car7.jpg")" alt=""></div>
+            <div class="item"><h4></h4><img src="@routes.Assets.at("images/owl-carousel/car8.jpg")" alt=""></div>
+            <div class="item"><h4></h4><img src="@routes.Assets.at("images/owl-carousel/car9.jpg")" alt=""></div>
+            <div class="item"><h4></h4><img src="@routes.Assets.at("images/owl-carousel/car10.jpg")" alt=""></div>
+            <div class="item"><h4></h4><img src="@routes.Assets.at("images/owl-carousel/car11.jpg")" alt=""></div>
+            <div class="item"><h4></h4><img src="@routes.Assets.at("images/owl-carousel/car12.jpg")" alt=""></div>*@
+
+            @*<div class="item"><h4>1</h4><img src="http://lorempixel.com/800/400/" alt=""></div>*@
+            @*<div class="item"><h4>2</h4><img src="http://lorempixel.com/800/400/" alt=""></div>*@
+            @*<div class="item"><h4>3</h4><img src="http://lorempixel.com/800/400/" alt=""></div>*@
+            @*<div class="item"><h4>4</h4><img src="http://lorempixel.com/800/400/" alt=""></div>*@
+            @*<div class="item"><h4>5</h4><img src="http://lorempixel.com/800/400/" alt=""></div>*@
+            @*<div class="item"><h4>6</h4><img src="http://lorempixel.com/800/400/" alt=""></div>*@
+            @*<div class="item"><h4>7</h4><img src="http://lorempixel.com/800/400/" alt=""></div>*@
+            @*<div class="item"><h4>8</h4><img src="http://lorempixel.com/800/400/" alt=""></div>*@
+            @*<div class="item"><h4>9</h4><img src="http://lorempixel.com/800/400/" alt=""></div>*@
+            @*<div class="item"><h4>10</h4><img src="http://lorempixel.com/800/400/" alt=""></div>*@
+            @*<div class="item"><h4>11</h4><img src="http://lorempixel.com/800/400/" alt=""></div>*@
+            @*<div class="item"><h4>12</h4><img src="http://lorempixel.com/800/400/" alt=""></div>*@
+        </div>
+
+    </div>
+    <div class="row">
+    @cards()
+    </div>
+
+}
