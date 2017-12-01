@@ -1,0 +1,43 @@
+@import scala.collection.immutable
+@import controllers.Application.MenuData
+@(data: List[CategoryItem], menuData: MenuData, currentCode: String = "")(implicit request: MessagesRequestHeader)
+    @main("Some category", menuData, showBreadcrumbs = true) {
+        <div class="row">
+
+            <div class="col-6 col-md-3">
+
+                <nav class="nav nav-pills nav-justified flex-column ">
+
+                    <a class="nav-link @("active".when(currentCode.isEmpty))" href="@routes.Application.index">
+                        All categories</a>
+
+                    @for((cat, index) <- data.map(_.category).groupBy(_.code).map(_._2.head).toList.sortBy(_.name).zipWithIndex) {
+                        <a class="nav-link @("active".when(currentCode == cat.code)) " href="@routes.Application.index">@cat.name</a>
+                    }
+
+                    @*<a class="nav-link active" href="#">Active</a>*@
+                    @*<a class="nav-link" href="#">Longer nav link</a>*@
+                    @*<a class="nav-link" href="#">Link</a>*@
+                    @*<a class="nav-link disabled" href="#">Disabled</a>*@
+                </nav>
+            </div>
+
+            <div class="col-6 col-md-9">
+                <div class="row">
+            @for((item, index) <- if(currentCode.isEmpty) data.zipWithIndex else data.filter(_.category.code == currentCode).zipWithIndex) {
+                <div class="col-sm">
+                <div class="card">
+                    <img class="card-img-top" src="@item.image" alt="@item.title">
+                    <div class="card-body">
+                        <h4 class="card-title">@item.title</h4>
+                        <p class="card-text">
+                            @item.text
+                        <a href="@routes.Application.index" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                </div>
+                </div>
+            }
+                </div>
+            </div>
+        </div>
+    }
