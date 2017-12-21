@@ -73,3 +73,6 @@
     background: #0b7285;
 }
 
+.sidebar-nav .metismenu > li  li li.active {
+    background: #0b7285;
+}
