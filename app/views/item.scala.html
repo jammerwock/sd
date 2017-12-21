@@ -1,32 +1,48 @@
 @import controllers.Application.MenuData
-@(data: List[CategoryItem], menuData: MenuData, item: CategoryItem, currentCode: String = "")(implicit request: MessagesRequestHeader)
+@(model: Model, menuData: MenuData, currentItem: CurrentItem)(implicit request: MessagesRequestHeader)
 
-@main(item.title, menuData, showBreadcrumbs = true) {
+@main("Item " + model.name, menuData, currentItem) {
+
+    <hr>
 
     <div class="row">
-        <div class="col-6 col-md-3">
-
-            <nav class="nav nav-pills nav-justified flex-column ">
-
-                <a class="nav-link @("active".when(currentCode.isEmpty))" href="@routes.Application.index">
-                    All categories</a>
-
-                @for((cat, index) <- data.map(_.category).groupBy(_.code).map(_._2.head).toList.sortBy(_.name).zipWithIndex) {
-                    <a class="nav-link @("active".when(currentCode == cat.code)) " href="@routes.Application.index">@cat.name</a>
-                }
-
-                @*<a class="nav-link active" href="#">Active</a>*@
-                @*<a class="nav-link" href="#">Longer nav link</a>*@
-                @*<a class="nav-link" href="#">Link</a>*@
-                @*<a class="nav-link disabled" href="#">Disabled</a>*@
-            </nav>
+        <div class="col-md-5">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/350x350" alt="">
         </div>
 
-        <div class="col-6 col-md-9">
+        <div class="col-md-7">
 
-            <div>@item.title</div>
-            <img src="@item.image">
-            <div>@item.text</div>
+        @model
+
+
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-12">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+
         </div>
     </div>
 }

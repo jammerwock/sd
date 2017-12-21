@@ -1,0 +1,93 @@
+@import controllers.Application.MenuData
+
+@import controllers.Application.CategoryCode
+@import controllers.Application.VendorCode
+@import controllers.Application.ModelId
+@(menuData: MenuData, currentItem: CurrentItem)
+
+<ul class="metismenu" id="menu1">
+
+    @for((category, byVendors) <- menuData) {
+        <li
+            class="active"
+            @*@if(currentItem.categoryCode == "" || category.code == currentItem.categoryCode) {*@
+                @*class="active"*@
+                @*}*@
+        >
+            <a class="has-arrow" href="#"
+                @* @if(currentItem.categoryCode == "" || category.code == currentItem.categoryCode) {
+                    aria-expanded="true"
+                } else {
+                    aria-expanded="false"
+                }
+            *@
+            >@category.name</a>
+            <ul
+            aria-expanded="true"
+@*
+                @if(currentItem.categoryCode == "" || category.code == currentItem.categoryCode) {
+                    aria-expanded="true"
+                } else {
+                    aria-expanded="false"
+                }
+                *@
+            >
+            @for((vendor, menuItems) <- byVendors) {
+                <li
+
+                    @if(vendor.code == currentItem.vendorCode && menuItems.exists(_.id == currentItem.modelId)) {
+                        class="active"
+                        }
+
+                ><a class="has-arrow"
+
+
+                    @if(vendor.code == currentItem.vendorCode) {
+                        aria-expanded="true"
+                    } else {
+                        aria-expanded="false"
+                    }
+
+
+                href="#">@vendor.name</a>
+                    <ul
+
+                        @if(vendor.code == currentItem.vendorCode && menuItems.exists(_.id == currentItem.modelId)) {
+                            aria-expanded="true"
+                        } else {
+                            aria-expanded="false"
+                        }
+                    >
+                    @for(menuItem <- menuItems) {
+                        <li
+                            @if(menuItem.id == currentItem.modelId) {
+                                class="active"
+                            }
+                        >
+                            <a
+                                @if(menuItem.id == currentItem.modelId) {
+                                    aria-expanded="true"
+                                } else {
+                                    aria-expanded="false"
+                                }
+                            href="/@menuItem.category.code/@menuItem.vendor.code/@menuItem.id">
+
+
+                                @if(menuItem.id == currentItem.modelId) {
+                                    <strong> <i>@menuItem.name</i> </strong>
+                                } else {
+                                    @menuItem.name
+                                }
+
+
+
+                            </a>
+                        </li>
+                    }
+                    </ul>
+                </li>
+            }
+            </ul>
+        </li>
+    }
+</ul>

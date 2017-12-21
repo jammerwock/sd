@@ -17,33 +17,48 @@ package controllers
 
 import javax.inject.Inject
 
-import akka.http.scaladsl.model.HttpHeader.ParsingResult
-import akka.http.scaladsl.model.HttpHeader.ParsingResult.Ok
 import com.github.mauricio.async.db.RowData
 import com.github.mauricio.async.db.pool.ConnectionPool
 import com.github.mauricio.async.db.postgresql.PostgreSQLConnection
-import controllers.Application.{ CategoryName, FileName, VendorName, getMenuData }
+import controllers.Application._
 import play.api.data.Forms._
 import play.api.data._
 import play.api.data.validation.Constraints._
+import play.api.i18n.I18nSupport
 import play.api.mvc._
 
-import scala.concurrent.{ Await, Future }
-import scala.concurrent.duration.Duration
-import scala.util.Try
+import scala.concurrent.{ ExecutionContext, Future }
 
-case class Category(code: String, name: String)
-case class CategoryItem(id: Long, category: Category, title: String, image: String, text: String)
+@deprecated
+case class CategoryDepr(code: String, name: String)
 
-case class MenuItem(id: Long, modelName: String, categoryName: CategoryName, categoryCode: String, vendorName: VendorName, vendorCode: String)
+@deprecated
+case class CategoryItemDepr(id: Long, category: CategoryDepr, title: String, image: String, text: String)
+
+case class Category(id: CategoryId, code: CategoryCode, name: CategoryName)
+
+case class Vendor(id: VendorId, code: VendorCode, name: VendorName)
+
+case class Model(id: ModelId, name: ModelName, category: Category, vendor: Vendor)
+
+case class CurrentItem(modelId: ModelId, categoryCode: CategoryCode, vendorCode: VendorCode)
+
+object CurrentItem {
+  val empty = CurrentItem(0, "", "")
+}
+
+@deprecated
+case class ModelItem(menuItem: MenuItem)
+
+@deprecated
+case class MenuItem(id: ModelId, modelName: String, categoryName: CategoryName, categoryCode: String, vendorName: VendorName, vendorCode: String)
 
 case class CarouselItem(fileName: FileName)
 
-class Application @Inject() (pool: ConnectionPool[PostgreSQLConnection], mcc: MessagesControllerComponents) extends MessagesAbstractController(mcc) {
+class Application @Inject() (pool: ConnectionPool[PostgreSQLConnection], mcc: MessagesControllerComponents)(implicit ec: ExecutionContext)
+    extends MessagesAbstractController(mcc) {
 
   import Application._
-
-  implicit val ec = scala.concurrent.ExecutionContext.Implicits.global
 
   val fooForm = Form(single("foo" -> text(maxLength = 20)))
 
@@ -54,73 +69,91 @@ class Application @Inject() (pool: ConnectionPool[PostgreSQLConnection], mcc: Me
     "color" -> nonEmptyText.verifying(pattern("^#?([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$".r))
   ))
 
-  def index = Action.async { implicit request =>
+  def index: Action[AnyContent] = Action.async { implicit request =>
 
     val eventualMenuData = getMenuData(pool)
     val eventualCarouselData = getCarouselData(pool)
     for {
       menuData <- eventualMenuData
       carouselData <- eventualCarouselData
-    } yield Ok(views.html.index(fooForm, menuData, carouselData, validationForm))
+    } yield Ok(views.html.index(menuData, carouselData))
 
     //    getMenuData(pool).flatMap(menuData => getCarouselData(pool).map(carouselData =>
     //      Ok(views.html.index(fooForm, menuData, carouselData, validationForm))))
 
   }
 
-  //  val catA: Category = Category("cata", "Cat A")
-  //  val catB = Category("catb", "Cat B")
-  //  val catC = Category("catc", "Cat C")
-  //
-  //  val item1 = CategoryItem(1, catA, "Domus", "http://via.placeholder.com/50x50", "Girls go with powerdrain at the colorful bridge!")
-  //  val item2 = CategoryItem(2, catA, "Extum", "http://via.placeholder.com/50x50", "Cosmonauts die with pattern at the calm parallel universe!")
-  //  val item3 = CategoryItem(3, catA, "Caelos", "http://via.placeholder.com/50x50", "Vital, clear collectives cunningly desire a seismic, virtual sun!")
-  //  val item4 = CategoryItem(4, catB, "Pulchritudine", "http://via.placeholder.com/50x50", "Sub-light, interstellar crewmates quickly destroy a photonic, devastated species!")
-  //  val item5 = CategoryItem(5, catB, "Abactus, era, et decor.", "http://via.placeholder.com/50x50", "Biological, ordinary sonic showers unearthly desire an evasive, mysterious hur'q!")
-  //  val item6 = CategoryItem(6, catC, "Hibrida, apolloniates, et parma.", "http://via.placeholder.com/50x50", "This understanding has only been deserved by a greatly exaggerated space suit!")
-  //
-  //  val cats = List(item1, item2, item3, item4, item5, item6)
+  def showItem(categoryCode: String, vendorCode: String, itemId: Long): Action[AnyContent] = Action.async { implicit request =>
+    val eventualMaybeItems: Future[Option[IndexedSeq[Model]]] = pool.sendPreparedStatement(
+      """
+            SELECT
+              m.id AS model_id,
+              m.name AS model_name,
+              m.category_code,
+              m.vendor_code,
+              c.id AS category_id,
+              c.name AS category_name,
+              v.id AS vendor_id,
+              v.name AS vendor_name
+            FROM models m
+              LEFT JOIN categories c ON c.code = m.category_code
+              LEFT JOIN vendors v ON v.code = m.vendor_code
+            WHERE m.id = ?
+                  """.stripMargin, Seq(itemId)
+    ).map {
+        _.rows.map { resultSet =>
+          resultSet.map { rowData =>
+            Model(
+              rowData("model_id").asInstanceOf[ModelId],
+              rowData("model_name").asInstanceOf[ModelName],
+              Category(
+                rowData("category_id").asInstanceOf[CategoryId],
+                rowData("category_code").asInstanceOf[CategoryCode],
+                rowData("category_name").asInstanceOf[CategoryName]
+              ),
+              Vendor(
+                rowData("vendor_id").asInstanceOf[VendorId],
+                rowData("vendor_code").asInstanceOf[VendorCode],
+                rowData("vendor_name").asInstanceOf[VendorName]
+              )
 
-  //  def category(code: String) = Action.async { implicit request =>
-  //    getMenuData(pool).map(menuData =>
-  //      Ok(views.html.category(cats, menuData, code)))
-  //  }
-  //
-  //  def item(code: String, id: Long) = Action.async { implicit request =>
-  //
-  //    getMenuData(pool).map(menuData =>
-  //      Ok(views.html.item(cats, menuData, cats(id.toInt), cats(id.toInt).category.code))
-  //    )
-  //
-  //  }
+            )
+          }
+        }
+      }
 
-  //  def vertical = Action { implicit request => Ok(views.html.vertical(fooForm)) }
-  //  def horizontal = Action { implicit request => Ok(views.html.horizontal(fooForm)) }
-  //  def inline = Action { implicit request => Ok(views.html.inline(fooForm)) }
-  //  def mixed = Action { implicit request => Ok(views.html.mixed(fooForm)) }
-  //  def readonly = Action { implicit request => Ok(views.html.readonly(fooForm)) }
-  //  def multifield = Action { implicit request => Ok(views.html.multifield(fooForm)) }
-  //  def extendIt = Action { implicit request => Ok(views.html.extendIt(fooForm)) }
-  //  def docs = Action { implicit request => Ok(views.html.docs(fooForm, validationForm)) }
+    val eventualMenuData = getMenuData(pool)
 
-  //  def categories() = Action.async { implicit request =>
-  //    getMenuData(pool).map(menuData =>
-  //      Ok(views.html.categories(cats, menuData)))
-  //  }
+    for {
+      menu <- eventualMenuData
+      modelItem <- eventualMaybeItems.map(_.get.head)
+    } yield {
+      Ok(views.html.item(modelItem, menu, CurrentItem(itemId, categoryCode, vendorCode)))
+    }
 
+  }
 }
 
 object Application {
-  type MenuData = Map[CategoryName, Map[VendorName, List[MenuItem]]]
+  type MenuData = Map[Category, Map[Vendor, List[Model]]]
   type CarouselData = List[CarouselItem]
 
+  type ModelId = Long
+  type ModelName = String
+
+  type CategoryId = Long
   type CategoryName = String
+  type CategoryCode = String
+
+  type VendorId = Long
   type VendorName = String
+  type VendorCode = String
+
   type FileName = String
 
-  implicit val ec = scala.concurrent.ExecutionContext.Implicits.global
+  //  implicit val ec = scala.concurrent.ExecutionContext.Implicits.global
 
-  def getCarouselData(pool: ConnectionPool[PostgreSQLConnection]): Future[CarouselData] = {
+  def getCarouselData(pool: ConnectionPool[PostgreSQLConnection])(implicit ec: ExecutionContext): Future[CarouselData] = {
     pool.sendQuery("SELECT filename FROM carousel") map { qr =>
       (for {
         rs <- qr.rows
@@ -135,7 +168,7 @@ object Application {
     }
   }
 
-  def getMenuData(pool: ConnectionPool[PostgreSQLConnection]): Future[MenuData] = {
+  def getMenuData(pool: ConnectionPool[PostgreSQLConnection])(implicit ec: ExecutionContext): Future[MenuData] = {
     pool.sendPreparedStatement(
       """
         |SELECT
@@ -143,7 +176,9 @@ object Application {
         |  m.name AS model_name,
         |  m.category_code,
         |  m.vendor_code,
+        |  c.id AS category_id,
         |  c.name AS category_name,
+        |  v.id AS vendor_id,
         |  v.name AS vendor_name
         |FROM models m
         |  LEFT JOIN categories c ON c.code = m.category_code
@@ -155,15 +190,22 @@ object Application {
           data <- rs
         } yield { data }
 
-        val menuData: List[MenuItem] = datas.map(d => d.map(rowData =>
+        val menuData: List[Model] = datas.map(d => d.map(rowData =>
 
-          MenuItem(
-            rowData("model_id").asInstanceOf[Long],
-            rowData("model_name").asInstanceOf[String],
-            rowData("category_name").asInstanceOf[CategoryName],
-            rowData("category_code").asInstanceOf[String],
-            rowData("vendor_name").asInstanceOf[VendorName],
-            rowData("vendor_code").asInstanceOf[String]
+          Model(
+            rowData("model_id").asInstanceOf[ModelId],
+            rowData("model_name").asInstanceOf[ModelName],
+            Category(
+              rowData("category_id").asInstanceOf[CategoryId],
+              rowData("category_code").asInstanceOf[CategoryCode],
+              rowData("category_name").asInstanceOf[CategoryName]
+            ),
+            Vendor(
+              rowData("vendor_id").asInstanceOf[VendorId],
+              rowData("vendor_code").asInstanceOf[VendorCode],
+              rowData("vendor_name").asInstanceOf[VendorName]
+            )
+
           )
         //        List(
         //          "name" -> rowData("name").asInstanceOf[String],
@@ -174,7 +216,7 @@ object Application {
 
         //        menuData.groupBy(_.categoryName) // fixme by categoryCode vendorCode
 
-        menuData.groupBy(_.categoryName).map { case (a, b) => a -> b.groupBy(_.vendorName) }
+        menuData.groupBy(_.category).map { case (a, b) => a -> b.groupBy(_.vendor) }
 
       }
 
