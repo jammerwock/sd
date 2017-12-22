@@ -2,7 +2,7 @@ name := """sd"""
 
 version := "1.1"
 
-scalaVersion := "2.12.3"
+scalaVersion := "2.12.4"
 
 routesGenerator := InjectedRoutesGenerator
 
@@ -31,5 +31,3 @@ libraryDependencies ++= Seq(
 scalacOptions ++= Seq(
   "-Xprint:typer"
 )
-
-scalariformSettings
