@@ -24,7 +24,8 @@ import controllers.Application._
 import play.api.data.Forms._
 import play.api.data._
 import play.api.data.validation.Constraints._
-import play.api.i18n.I18nSupport
+import play.api.i18n.{ I18nSupport, Lang, LangImplicits, Langs }
+import play.api.i18n.Messages.Implicits._
 import play.api.mvc._
 
 import scala.concurrent.{ ExecutionContext, Future }
@@ -56,7 +57,7 @@ case class MenuItem(id: ModelId, modelName: String, categoryName: CategoryName, 
 case class CarouselItem(fileName: FileName)
 
 class Application @Inject() (pool: ConnectionPool[PostgreSQLConnection], mcc: MessagesControllerComponents)(implicit ec: ExecutionContext)
-    extends MessagesAbstractController(mcc) {
+    extends MessagesAbstractController(mcc) with I18nSupport {
 
   import Application._
 
