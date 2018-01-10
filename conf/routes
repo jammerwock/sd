@@ -4,21 +4,13 @@
 
 # Home page
 GET        /                     controllers.Application.index
-#GET        /categories           controllers.Application.categories
-#GET        /category/:code         controllers.Application.category(code: String)
-#GET        /category/:code/:id         controllers.Application.item(code: String, id: Long)
-#GET        /vertical            controllers.Application.vertical
-#GET        /horizontal          controllers.Application.horizontal
-#GET        /inline              controllers.Application.inline
-#GET        /mixed               controllers.Application.mixed
-#GET        /readonly            controllers.Application.readonly
-#GET        /multifield          controllers.Application.multifield
-#GET        /extend-it           controllers.Application.extendIt
-#GET        /docs                controllers.Application.docs
-
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file             controllers.Assets.at(path="/public", file)
 GET        /lang/:lang               controllers.Language.switch(lang: String)
 
 GET /:categoryCode/:vendorCode/:itemId controllers.Application.showItem(categoryCode: String, vendorCode: String, itemId: Long)
+
+
+GET /about   controllers.Application.about
+GET /contacts   controllers.Application.contacts
