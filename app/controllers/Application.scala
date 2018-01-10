@@ -133,6 +133,13 @@ class Application @Inject() (pool: ConnectionPool[PostgreSQLConnection], mcc: Me
     }
 
   }
+
+  def about = Action {
+    Ok("about")
+  }
+  def contacts = Action {
+    Ok("contacts")
+  }
 }
 
 object Application {
