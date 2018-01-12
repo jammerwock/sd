@@ -1,20 +1,22 @@
-@import controllers.Application.MenuData
+@import types.MenuData
 @import views.html.parts.sidemenu
 @import views.html.parts.navbar
 @import views.html.parts.head
-@(title: String, menuData: MenuData, currentItem: CurrentItem = CurrentItem.empty, showBreadcrumbs: Boolean = false, tab: String = "", styles: Html = Html(""), scripts: Html = Html(""), modals: Html = Html(""))(content: Html)(implicit request: MessagesRequestHeader)
+@import device.Device
+
+@(title: String, menuData: MenuData, device: Option[Device] = None, showBreadcrumbs: Boolean = false, tab: String = "", styles: Html = Html(""), scripts: Html = Html(""), modals: Html = Html(""))(content: Html)(implicit request: MessagesRequestHeader)
 
 
 
 <!DOCTYPE html>
 <html>
-    @head()
+    @head(title)
     <body>
         <div class="container">
             @navbar()
             <div class="row">
                 <div class="col-md-3">
-                    @sidemenu(menuData, currentItem)
+                    @sidemenu(menuData, device)
                 </div>
                 <div class="col-md-9">
 

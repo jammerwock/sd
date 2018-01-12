@@ -1,0 +1,9 @@
+@import types.MenuData
+@(title: String, menuData: MenuData)(implicit request: MessagesRequestHeader)
+
+@main(title, menuData) {
+    <hr>
+    <div class="row">
+        <div class="col-md-12"><strong>@request.messages("device.notFound")</strong></div>
+    </div>
+}

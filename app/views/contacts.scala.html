@@ -1,0 +1,7 @@
+@import types.MenuData
+@(title: String, menuData: MenuData)(implicit request: MessagesRequestHeader)
+
+@main(title, menuData) {
+    <hr>
+    <h4>@request.messages("contacts.contacts")</h4>
+}
