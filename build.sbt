@@ -28,6 +28,16 @@ libraryDependencies ++= Seq(
   "net.codingwell" %% "scala-guice" % "4.1.0"
 )
 
+libraryDependencies += "org.typelevel" %% "cats-core" % "1.0.1"
+
+libraryDependencies += "org.typelevel" %% "cats-mtl-core" % "0.2.1"
+
+libraryDependencies += "org.typelevel" %% "cats-effect" % "0.5"
+
+libraryDependencies += "org.typelevel" %% "mouse" % "0.16"
+
 scalacOptions ++= Seq(
-  "-Xprint:typer"
+  "-Xdev",
+  "-Xfuture",
+  "-Ypartial-unification"
 )

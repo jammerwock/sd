@@ -1,8 +1,12 @@
-@import controllers.Application.MenuData
+@import types.MenuData
+@import device.Device
 
-@(menuData: MenuData, currentItem: CurrentItem)
+@(menuData: MenuData, device: Option[Device] = None)
 <nav class="sidebar-nav">
 <ul class="metismenu" id="menu1">
+
+    @vendorCode = @{device.fold("")(_.vendor.code)}
+    @deviceId = @{device.fold(-1L)(_.id)}
 
     @for((category, byVendors) <- menuData) {
         <li
@@ -10,14 +14,14 @@
             <a class="has-arrow" href="#">@category.name</a>
             <ul aria-expanded="true">
             @for((vendor, menuItems) <- byVendors) {
-                <li @if(vendor.code == currentItem.vendorCode && menuItems.exists(_.id == currentItem.modelId)) {class="active"}>
-                    <a class="has-arrow" @if(vendor.code == currentItem.vendorCode) {aria-expanded="true"} else {aria-expanded="false"} href="#">@vendor.name</a>
-                    <ul @if(vendor.code == currentItem.vendorCode && menuItems.exists(_.id == currentItem.modelId)) {aria-expanded="true"} else {aria-expanded="false"}>
+                <li @if(vendor.code == vendorCode && menuItems.exists(_.id == deviceId)) {class="active"}>
+                    <a class="has-arrow" @if(vendor.code == vendorCode) {aria-expanded="true"} else {aria-expanded="false"} href="#">@vendor.name</a>
+                    <ul @if(vendor.code == vendorCode && menuItems.exists(_.id == deviceId)) {aria-expanded="true"} else {aria-expanded="false"}>
                     @for(menuItem <- menuItems) {
-                        <li @if(menuItem.id == currentItem.modelId) {class="active"}>
-                            <a @if(menuItem.id == currentItem.modelId) {aria-expanded="true"} else {aria-expanded="false"} href="/@menuItem.category.code/@menuItem.vendor.code/@menuItem.id">
+                        <li @if(menuItem.id == deviceId) {class="active"}>
+                            <a @if(menuItem.id == deviceId) {aria-expanded="true"} else {aria-expanded="false"} href="/@menuItem.category.code/@menuItem.vendor.code/@menuItem.id">
 
-                                @if(menuItem.id == currentItem.modelId) {
+                                @if(menuItem.id == deviceId) {
                                     <strong> <i>@menuItem.name</i> </strong>
                                 } else {
                                     @menuItem.name

@@ -6,7 +6,7 @@
     <a class="navbar-brand" href="/">System Dynamics</a>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-            <a class="nav-item nav-link @if(request.path.startsWith("/about")) {about}" href="/about">@request.messages("menu.about")</a>
+            <a class="nav-item nav-link @if(request.path.startsWith("/about")) {active}" href="/about">@request.messages("menu.about")</a>
             <a class="nav-item nav-link @if(request.path.startsWith("/contacts")) {active}" href="/contacts">@request.messages("menu.contacts")</a>
 
         </div>

@@ -1,7 +1,8 @@
-@import controllers.Application.MenuData
-@(model: Model, menuData: MenuData, currentItem: CurrentItem)(implicit request: MessagesRequestHeader)
+@import types.MenuData
+@import device.Device
+@(title: String, device: Device, menuData: MenuData)(implicit request: MessagesRequestHeader)
 
-@main("Item " + model.name, menuData, currentItem) {
+@main(title, menuData, Some(device)) {
 
     <hr>
 
@@ -12,7 +13,7 @@
 
         <div class="col-md-7">
 
-        @model
+        @device
 
 
         </div>

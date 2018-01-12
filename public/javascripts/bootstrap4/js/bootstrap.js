@@ -753,7 +753,7 @@ var Carousel = function ($) {
           return _this4.cycle(event);
         });
         if ('ontouchstart' in document.documentElement) {
-          // if it's a touch-enabled device, mouseenter/leave are fired as
+          // if it's a touch-enabled devices, mouseenter/leave are fired as
           // part of the mouse compatibility events on first tap - the carousel
           // would stop cycling until user tapped out of it;
           // here, we listen for touchend, explicitly pause the carousel
@@ -1537,7 +1537,7 @@ var Dropdown = function ($) {
       }
       this._popper = new Popper(element, this._menu, this._getPopperConfig());
 
-      // if this is a touch-enabled device we add extra
+      // if this is a touch-enabled devices we add extra
       // empty mouseover listeners to the body's immediate children;
       // only needed because of broken event delegation on iOS
       // https://www.quirksmode.org/blog/archives/2014/02/mouse_event_bub.html
@@ -1697,7 +1697,7 @@ var Dropdown = function ($) {
           continue;
         }
 
-        // if this is a touch-enabled device we remove the extra
+        // if this is a touch-enabled devices we remove the extra
         // empty mouseover listeners we added for iOS support
         if ('ontouchstart' in document.documentElement) {
           $('body').children().off('mouseover', null, $.noop);
@@ -3227,7 +3227,7 @@ var Tooltip = function ($) {
 
         $(tip).addClass(ClassName.SHOW);
 
-        // if this is a touch-enabled device we add extra
+        // if this is a touch-enabled devices we add extra
         // empty mouseover listeners to the body's immediate children;
         // only needed because of broken event delegation on iOS
         // https://www.quirksmode.org/blog/archives/2014/02/mouse_event_bub.html
@@ -3287,7 +3287,7 @@ var Tooltip = function ($) {
 
       $(tip).removeClass(ClassName.SHOW);
 
-      // if this is a touch-enabled device we remove the extra
+      // if this is a touch-enabled devices we remove the extra
       // empty mouseover listeners we added for iOS support
       if ('ontouchstart' in document.documentElement) {
         $('body').children().off('mouseover', null, $.noop);
