@@ -8,6 +8,8 @@ class DeviceService[F[_]](deviceRepoAlgebra: DeviceRepoAlgebra[F]) {
 
   def getOne(id: DeviceId): F[Option[Device]] = deviceRepoAlgebra.retrieveOne(id)
 
+  def getParams(id: DeviceId): F[Map[String, String]] = deviceRepoAlgebra.retrieveDeviceParams(id)
+
 }
 
 object DeviceService {

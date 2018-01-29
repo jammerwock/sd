@@ -1,49 +1,58 @@
-@import types.MenuData
 @import device.Device
-@(title: String, device: Device, menuData: MenuData)(implicit request: MessagesRequestHeader)
+@import types.{Images, MenuData}
+@(title: String, device: Device, images: Images, menuData: MenuData)(implicit request: MessagesRequestHeader)
 
 @main(title, menuData, Some(device)) {
 
     <hr>
-
-    <div class="row">
-        <div class="col-md-5">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/350x350" alt="">
-        </div>
-
-        <div class="col-md-7">
-
-        @device
-
-
-        </div>
+    <div class="d-flex  justify-content-between">
+        <h3><strong>@device.name</strong></h3>
+        <button type="button" class="btn btn-primary ">Купить</button>
     </div>
-    <hr>
-    <div class="row">
-        <div class="col-12">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
-            <img class=" img-thumbnail" src="http://via.placeholder.com/100x100" alt="">
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-7">
+                <figure class="figure">
+                    <a class="proxy" href="#">
+                        <img class="main" src="@routes.Assets.at(images.head)" width="350" height="350" alt="" />
+                    </a>
+                </figure>
+            </div>
+            <div class="col-5">
 
+                @if(!images.head.contains("not_found")){
+                    @for((image, i) <- images.zipWithIndex) {
+                        <a data-fancybox="bitrek-810" href="@routes.Assets.at(image)">
+                            <img class="thumb border  rounded-circle @if(0 == i) {border-primary } else {border-light} " src="@routes.Assets.at(image)" width="100" height="100" alt="sdf">
+                        </a>
+
+                        @if((i + 1) % 3 == 0) {
+                            <br>
+                        }
+                    }
+                }
+            </div>
         </div>
+
     </div>
+    @if(Option(device.description).isDefined) {
+        <div class="p-3 mb-2 bg-secondary text-white 111jumbotron">
+            @device.description
+        </div>
+    }
+    <table class="table table-hover table-sm">
+        @if(device.params.nonEmpty) {
+            <caption>Внешний вид и характеристики товара могут отличаться</caption>
+        }
+        <tbody>
+
+        @for((paramName, paramValue) <- device.params) {
+            <tr>
+                <th scope="row">@paramName</th>
+                <td>@paramValue</td>
+            </tr>
+        }
+        </tbody>
+    </table>
 }

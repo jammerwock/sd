@@ -16,6 +16,15 @@ class DeviceRepoInterpreterDB(pool: DBConnection)(implicit ec: ExecutionContext)
   override def retrieveOne(id: DeviceId): Future[Option[Device]] =
     (pool.sendPreparedStatement _).tupled(DeviceRepoInterpreterDB.findById(id))
       .map(_.rows.flatMap(DeviceRepoInterpreterDB.resultSet2Devices(_).headOption))
+
+  override def retrieveDeviceParams(id: DeviceId): Future[Map[String, String]] =
+    (pool.sendPreparedStatement _).tupled(DeviceRepoInterpreterDB.queryGetParams(id)) map {
+      _.rows.map {
+        _.map { rowData =>
+          rowData("param_name").asInstanceOf[String] -> rowData("param_value").asInstanceOf[String]
+        }.toMap
+      }.getOrElse(DeviceParams.EMPTY)
+    }
 }
 
 
@@ -24,26 +33,31 @@ object DeviceRepoInterpreterDB {
   def apply(pool: DBConnection)(implicit ec: ExecutionContext): DeviceRepoInterpreterDB =
     new DeviceRepoInterpreterDB(pool)
 
+  private def queryGetParams(id: DeviceId): (SqlQuery, SqlParams) = (
+    "SELECT param_name, param_value FROM devices_params WHERE device_id = ?", Seq(id)
+  )
+
   private[this] val FIND =
     """
         SELECT
-          m.id AS device_id,
-          m.name AS device_name,
-          m.category_code,
-          m.vendor_code,
+          d.id AS device_id,
+          d.name AS device_name,
+          d.description AS description,
+          d.category_code,
+          d.vendor_code,
           c.id AS category_id,
           c.name AS category_name,
           v.id AS vendor_id,
           v.name AS vendor_name
-        FROM devices m
-          LEFT JOIN categories c ON c.code = m.category_code
-          LEFT JOIN vendors v ON v.code = m.vendor_code
+        FROM devices d
+          LEFT JOIN categories c ON c.code = d.category_code
+          LEFT JOIN vendors v ON v.code = d.vendor_code
         """.stripMargin
 
-  private val findAll: Query = FIND
+  private val findAll: SqlQuery = FIND
 
-  private def findById(id: DeviceId): (Query, Params) = (
-    FIND + " WHERE m.id = ? ",
+  private def findById(id: DeviceId): (SqlQuery, SqlParams) = (
+    FIND + " WHERE d.id = ? ",
     Seq(id)
   )
 
@@ -60,7 +74,8 @@ object DeviceRepoInterpreterDB {
         rowData("vendor_id").asInstanceOf[VendorId],
         rowData("vendor_code").asInstanceOf[VendorCode],
         rowData("vendor_name").asInstanceOf[VendorName]
-      )
+      ),
+      rowData("description").asInstanceOf[String]
     )
   }
 }

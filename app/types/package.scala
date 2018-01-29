@@ -5,8 +5,8 @@ import device._
 import scala.concurrent.Future
 
 package object types {
-  type Query = String
-  type Params = Seq[Any]
+  type SqlQuery = String
+  type SqlParams = Seq[Any]
 
   type DBConnection = ConnectionPool[PostgreSQLConnection]
 
@@ -21,6 +21,8 @@ package object types {
   type VendorName = String
   type VendorCode = String
 
+  type DeviceParams = Map[String, String]
+
   type FileName = String
 
 
@@ -28,4 +30,10 @@ package object types {
   type CarouselData = List[CarouselItem]
 
   type DeviceServiceFuture = DeviceService[Future]
+
+  type Images = Array[String]
+
+  object DeviceParams {
+    val EMPTY = Map.empty[String, String]
+  }
 }
