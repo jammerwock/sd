@@ -11,9 +11,17 @@
 
         </div>
     </div>
+  @*
+<div class="pr-3" style="font-size:2em;color:Grey">
+    <span class="fa-layers fa-fw" > <!-- style="background:MistyRose" -->
 
+    <i class="fas fa-shopping-cart disabled"></i>
+        <span class="fa-layers-counter" style="font-size: 1.3em; background:Tomato">5</span>
 
-    <select class="custom-select" name="langs" id="langs">
+    </span>
+</div>
+*@
+    <select class="custom-select" style="width: auto" name="langs" id="langs">
         <option value="ru"
 
             @if(request.messages.lang.code == "ru") {

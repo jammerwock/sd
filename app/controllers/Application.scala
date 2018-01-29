@@ -37,9 +37,16 @@ class Application @Inject()(pool: DBConnection,
     (for {
       menu <- menuData
       device <- IO.fromFuture(Eval.always(deviceService.getOne(itemId)))
+      params <- IO.fromFuture(Eval.always(deviceService.getParams(itemId)))
+
+      images <- if (device.isDefined  && device.get.id == 17 )
+      {
+        val pathToFile = s"images/devices/${device.get.vendor.code}/${device.get.name.toLowerCase}"
+        IO(new java.io.File(s"public/$pathToFile").listFiles(_.isFile).map(file =>  s"$pathToFile/${file.getName}" ))}
+      else IO(Array.fill(1){"images/not_found.jpg"} )
     } yield {
       device.fold(Ok(views.html.devices.notFound(request.messages("device.notFound"), menu))) { d =>
-        Ok(views.html.devices.found(request.messages("device.device") + " " + d.name, d, menu))
+        Ok(views.html.devices.found(request.messages("device.device") + " " + d.name, d.copy(params = params), images, menu))
       }
     }).unsafeToFuture()
   }
