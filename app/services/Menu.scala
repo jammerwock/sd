@@ -13,8 +13,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class Menu @Inject()(deviceService: DeviceService[Future])(implicit ec: ExecutionContext) {
 
   def getMenu: IO[MenuData] = {
-    IO.fromFuture(Eval.always(deviceService.getAll.map(_.groupBy(model => model.category).map { case (a, b) => a -> b.groupBy(_.vendor) })))
+    IO.fromFuture(Eval.always(deviceService.getAll.map(_.groupBy(model => model.category).map { case (a, b) => a -> b.sortBy(_.order).groupBy(_.vendor) })))
   }
-
-
 }
