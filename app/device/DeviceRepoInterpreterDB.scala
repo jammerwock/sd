@@ -17,13 +17,19 @@ class DeviceRepoInterpreterDB(pool: DBConnection)(implicit ec: ExecutionContext)
     (pool.sendPreparedStatement _).tupled(DeviceRepoInterpreterDB.findById(id))
       .map(_.rows.flatMap(DeviceRepoInterpreterDB.resultSet2Devices(_).headOption))
 
-  override def retrieveDeviceParams(id: DeviceId): Future[Map[String, String]] =
-    (pool.sendPreparedStatement _).tupled(DeviceRepoInterpreterDB.queryGetParams(id)) map {
-      _.rows.map {
-        _.map { rowData =>
-          rowData("param_name").asInstanceOf[String] -> rowData("param_value").asInstanceOf[String]
-        }.toMap
-      }.getOrElse(DeviceParams.EMPTY)
+  override def retrieveDeviceParams(id: DeviceId): Future[Vector[DeviceParams]] =
+    (pool.sendPreparedStatement _).tupled(DeviceRepoInterpreterDB.queryGetParams(id)) map { result =>
+      val vector: Option[Vector[DeviceParams]] = result.rows.map { set =>
+          val paramses: IndexedSeq[DeviceParams] = set.map { rowData =>
+            DeviceParams(
+              rowData("param_name").asInstanceOf[String],
+              rowData("param_value").asInstanceOf[String],
+              rowData("param_order").asInstanceOf[Int]
+            )
+          }
+          paramses.toVector
+      }
+      vector.get
     }
 }
 
@@ -34,7 +40,7 @@ object DeviceRepoInterpreterDB {
     new DeviceRepoInterpreterDB(pool)
 
   private def queryGetParams(id: DeviceId): (SqlQuery, SqlParams) = (
-    "SELECT param_name, param_value FROM devices_params WHERE device_id = ?", Seq(id)
+    "SELECT param_name, param_value, param_order FROM devices_params WHERE device_id = ? ORDER BY param_order ASC", Seq(id)
   )
 
   private[this] val FIND =
@@ -43,6 +49,7 @@ object DeviceRepoInterpreterDB {
           d.id AS device_id,
           d.name AS device_name,
           d.description AS description,
+          d.device_order AS device_order,
           d.category_code,
           d.vendor_code,
           c.id AS category_id,
@@ -75,7 +82,8 @@ object DeviceRepoInterpreterDB {
         rowData("vendor_code").asInstanceOf[VendorCode],
         rowData("vendor_name").asInstanceOf[VendorName]
       ),
-      rowData("description").asInstanceOf[String]
+      rowData("description").asInstanceOf[String],
+      rowData("device_order").asInstanceOf[Int]
     )
   }
 }

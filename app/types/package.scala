@@ -21,8 +21,6 @@ package object types {
   type VendorName = String
   type VendorCode = String
 
-  type DeviceParams = Map[String, String]
-
   type FileName = String
 
 
@@ -33,7 +31,4 @@ package object types {
 
   type Images = Array[String]
 
-  object DeviceParams {
-    val EMPTY = Map.empty[String, String]
-  }
 }
