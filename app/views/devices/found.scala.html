@@ -16,16 +16,16 @@
             <div class="col-7">
                 <figure class="figure">
                     <a class="proxy" href="#">
-                        <img class="main" src="@routes.Assets.at(images.head)" width="350" height="350" alt="" />
+                        <img class="main" src="@routes.Assets.at(images.head.path)" width="350" height="350" alt="" />
                     </a>
                 </figure>
             </div>
             <div class="col-5">
 
-                @if(!images.head.contains("not_found")){
+                @if(!images.head.path.contains("not_found")){
                     @for((image, i) <- images.zipWithIndex) {
-                        <a data-fancybox="bitrek-810" href="@routes.Assets.at(image)">
-                            <img class="thumb border  rounded-circle @if(0 == i) {border-primary } else {border-light} " src="@routes.Assets.at(image)" width="100" height="100" alt="sdf">
+                        <a data-fancybox="bitrek-810" href="@routes.Assets.at(image.path)">
+                            <img class="thumb border  rounded-circle @if(0 == i) {border-primary } else {border-light} " src="@routes.Assets.at(image.path)" width="100" height="100" alt="sdf">
                         </a>
 
                         @if((i + 1) % 3 == 0) {

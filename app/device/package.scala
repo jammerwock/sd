@@ -17,4 +17,11 @@ package object device {
   case class CarouselItem(fileName: FileName)
 
   case class DeviceParams(name: String, value: String, order: Int)
+
+  case class DeviceImage(path: String, order: Int = 1)
+
+  object DeviceImage {
+    val NOT_FOUND = DeviceImage("images/not_found.jpg")
+  }
+
 }

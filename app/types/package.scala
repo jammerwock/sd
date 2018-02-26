@@ -29,6 +29,6 @@ package object types {
 
   type DeviceServiceFuture = DeviceService[Future]
 
-  type Images = Array[String]
+  type Images = Vector[DeviceImage]
 
 }
