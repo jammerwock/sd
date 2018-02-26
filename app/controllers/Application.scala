@@ -1,9 +1,9 @@
 package controllers
 
 import javax.inject.Inject
-
 import cats.Eval
 import cats.effect.IO
+import device.DeviceImage
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 import services.{Carousel, Menu}
@@ -38,15 +38,11 @@ class Application @Inject()(pool: DBConnection,
       menu <- menuData
       device <- IO.fromFuture(Eval.always(deviceService.getOne(itemId)))
       params <- IO.fromFuture(Eval.always(deviceService.getParams(itemId)))
-
-      images <- if (device.isDefined  && device.get.id == 17 )
-      {
-        val pathToFile = s"images/devices/${device.get.vendor.code}/${device.get.name.toLowerCase.replace(" ","")}"
-        IO(new java.io.File(s"public/$pathToFile").listFiles(_.isFile).map(file =>  s"$pathToFile/${file.getName}" ))}
-      else IO(Array.fill(1){"images/not_found.jpg"} )
+      images <- IO.fromFuture(Eval.always(deviceService.getImages(itemId)))
     } yield {
+      val imgs =  if (images.isEmpty) Vector.fill(1)(DeviceImage.NOT_FOUND) else images
       device.fold(Ok(views.html.devices.notFound(request.messages("device.notFound"), menu))) { d =>
-        Ok(views.html.devices.found(request.messages("device.device") + " " + d.name, d.copy(params = params.sortBy(_.order)), images, menu))
+        Ok(views.html.devices.found(request.messages("device.device") + " " + d.name, d.copy(params = params.sortBy(_.order)), imgs, menu))
       }
     }).unsafeToFuture()
   }

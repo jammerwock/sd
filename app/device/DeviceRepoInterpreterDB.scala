@@ -31,6 +31,19 @@ class DeviceRepoInterpreterDB(pool: DBConnection)(implicit ec: ExecutionContext)
       }
       vector.get
     }
+
+  override def retrieveDeviceImages(id: DeviceId): Future[Vector[DeviceImage]] =
+    (pool.sendPreparedStatement _).tupled(DeviceRepoInterpreterDB.queryGetImages(id)) map { result =>
+    val vector: Option[Vector[DeviceImage]] = result.rows.map { set =>
+      val images: IndexedSeq[DeviceImage] = set.map { rowData =>
+        DeviceImage(
+          rowData("image_path").asInstanceOf[String] + rowData("image_name").asInstanceOf[String]
+        )
+      }
+      images.toVector
+    }
+    vector.get
+  }
 }
 
 
@@ -38,6 +51,10 @@ object DeviceRepoInterpreterDB {
 
   def apply(pool: DBConnection)(implicit ec: ExecutionContext): DeviceRepoInterpreterDB =
     new DeviceRepoInterpreterDB(pool)
+
+  private def queryGetImages(id: DeviceId): (SqlQuery, SqlParams) = (
+    "SELECT image_path, image_name, image_order FROM devices_images WHERE device_id = ? ORDER BY image_order ASC", Seq(id)
+  )
 
   private def queryGetParams(id: DeviceId): (SqlQuery, SqlParams) = (
     "SELECT param_name, param_value, param_order FROM devices_params WHERE device_id = ? ORDER BY param_order ASC", Seq(id)

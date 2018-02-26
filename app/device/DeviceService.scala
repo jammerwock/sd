@@ -12,6 +12,8 @@ class DeviceService[F[_]](deviceRepoAlgebra: DeviceRepoAlgebra[F]) {
 
   def getParams(id: DeviceId): F[Vector[DeviceParams]] = deviceRepoAlgebra.retrieveDeviceParams(id)
 
+  def getImages(id: DeviceId): F[Vector[DeviceImage]] = deviceRepoAlgebra.retrieveDeviceImages(id)
+
 }
 
 object DeviceService {
