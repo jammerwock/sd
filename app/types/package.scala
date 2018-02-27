@@ -12,6 +12,7 @@ package object types {
 
   type DeviceId = Long
   type DeviceName = String
+  type DeviceDisplayName = String
 
   type CategoryId = Long
   type CategoryName = String

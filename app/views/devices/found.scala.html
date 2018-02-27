@@ -7,7 +7,7 @@
 
     <hr>
     <div class="d-flex  justify-content-between">
-        <h3><strong>@device.name</strong></h3>
+        <h3><strong>@if(Option(device.displayName).isDefined){ @device.displayName } else { @device.name }</strong></h3>
         <button type="button" class="btn btn-primary ">Купить</button>
     </div>
     <br>
@@ -48,9 +48,9 @@
         <tbody>
 
         @for((DeviceParams(paramName, paramValue, _)) <- device.params) {
-            <tr>
-                <th scope="row">@paramName</th>
-                <td>@paramValue</td>
+            <tr @if(Option(paramValue).isEmpty) { class="params_separator" } >
+                <th scope="row">@Html(paramName)</th>
+                <td>@Html(paramValue)</td>
             </tr>
         }
         </tbody>

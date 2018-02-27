@@ -8,6 +8,7 @@ package object device {
 
   case class Device(id: DeviceId,
                     name: DeviceName,
+                    displayName: DeviceDisplayName,
                     category: Category,
                     vendor: Vendor,
                     description: String,

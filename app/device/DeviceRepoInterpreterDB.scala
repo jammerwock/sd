@@ -65,6 +65,7 @@ object DeviceRepoInterpreterDB {
         SELECT
           d.id AS device_id,
           d.name AS device_name,
+          d.display_name AS device_display_name,
           d.description AS description,
           d.device_order AS device_order,
           d.category_code,
@@ -89,6 +90,7 @@ object DeviceRepoInterpreterDB {
     Device(
       rowData("device_id").asInstanceOf[DeviceId],
       rowData("device_name").asInstanceOf[DeviceName],
+      rowData("device_display_name").asInstanceOf[DeviceDisplayName],
       Category(
         rowData("category_id").asInstanceOf[CategoryId],
         rowData("category_code").asInstanceOf[CategoryCode],
